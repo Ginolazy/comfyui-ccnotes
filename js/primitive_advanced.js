@@ -268,7 +268,7 @@ app.registerExtension({
             nodeType.prototype.createLabel = function (targetNode, targetWidget) {
                 const prefix = targetNode.title || targetNode.type || "Widget";
                 const widgetName = targetWidget.label || targetWidget.name || "";
-                return `${prefix}>${widgetName}`;
+                return `${prefix}•${widgetName}`;
             };
 
             nodeType.prototype.createMatchingWidget = function (outputName, type, targetWidget, targetNode) {

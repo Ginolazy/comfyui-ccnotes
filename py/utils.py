@@ -453,6 +453,36 @@ class AnyPreviewPause(AnyPreview, PauseMixin):
 
         return result
 
+class AutoMute:
+    """
+    AutoMute (Linked / Conditional) Node: Automatically mutes or unmutes target groups or nodes
+    based on the presence and active state of specified nodes. It automatically mutes or unmutes
+    target groups or nodes based on:
+    - the presence of specified nodes (by name or name group)
+    - and whether those nodes are currently active
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "keys": ("STRING", {
+                    "default": "",
+                    "multiline": False,
+                    # Node titles to monitor, separated by commas (e.g., get_mask1, get_mask2)
+                }),
+            }
+        }
+    
+    RETURN_TYPES = ()
+    FUNCTION = "noop"
+    CATEGORY = "CCNotes/Utils"
+    OUTPUT_NODE = True
+    DESCRIPTION = "AutoMute 🎛: Automatically mutes/unmutes target groups/nodes based on monitored nodes. Works like workflow autopilot! 🚀"
+    
+    def noop(self, keys="", **kwargs):
+        """No-op, all logic is implemented in frontend. No return value"""
+        return ()
+
 class ImageMaskComposite(SaveImage):
     def __init__(self):
         self.output_dir = folder_paths.get_temp_directory()
@@ -477,7 +507,7 @@ class ImageMaskComposite(SaveImage):
         }
 
     RETURN_TYPES = ("IMAGE",)
-    RETURN_NAMES = ("image",)
+    RETURN_NAMES = ("composite",)
     FUNCTION = "process_composite"
     OUTPUT_NODE = True
     CATEGORY = "CCNotes/Image & Mask"
@@ -520,7 +550,7 @@ class MakeAnyList:
                 values.append(v)
         return (values,)
 
-class PrimitiveAdvanced:
+class PrimitiveHub:
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -532,12 +562,12 @@ class PrimitiveAdvanced:
             }
         }
 
-    DISPLAY_NAME = "PrimitivePro"
     RETURN_TYPES = tuple(any_type for _ in range(MAX_FLOW_PORTS))
     RETURN_NAMES = tuple(f"connect_to_widget_input_{i+1}" for i in range(MAX_FLOW_PORTS))
     FUNCTION = "proxy_widget"
     CATEGORY = "CCNotes/Utils"
     OUTPUT_IS_LIST = tuple(True for _ in range(MAX_FLOW_PORTS))
+    DESCRIPTION = "Manages and proxies multiple Primitive-style widgets from different nodes in a single control hub."
 
     @classmethod
     def IS_CHANGED(cls, **kwargs):
@@ -582,44 +612,11 @@ class SwitchAny:
                 "switch": ("BOOLEAN", {"default": False}),
             },
             "optional": {
-                "true": (any_type, {"lazy": True}),
-                "false": (any_type, {"lazy": True}),
-            }
-        }
-
-    DISPLAY_NAME = "SwitchAnyPro"
-    RETURN_TYPES = (any_type,)
-    RETURN_NAMES = ("output",)
-    FUNCTION = "switch"
-    CATEGORY = "CCNotes/Utils"
-
-    def check_lazy_status(self, switch, true=None, false=None):
-        needed = []
-        if switch:
-            if true is None:
-                needed.append("true")
-        else:
-            if false is None:
-                needed.append("false")
-        return needed
-
-    def switch(self, switch, true=None, false=None):
-        return (true if switch else false,)
-
-class SwitchAnyBasic:
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "switch": ("BOOLEAN", {"default": False}),
-            },
-            "optional": {
                 "true": (any_type,),
                 "false": (any_type,),
             }
         }
 
-    DISPLAY_NAME = "SwitchAny"
     RETURN_TYPES = (any_type,)
     RETURN_NAMES = ("output",)
     FUNCTION = "switch"
@@ -651,6 +648,38 @@ class SwitchAuto:
         else:
             return (None,)
 
+class SwitchAnyMute:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "switch": ("BOOLEAN", {"default": False}),
+            },
+            "optional": {
+                "true": (any_type, {"lazy": True}),
+                "false": (any_type, {"lazy": True}),
+            }
+        }
+
+    RETURN_TYPES = (any_type,)
+    RETURN_NAMES = ("output",)
+    FUNCTION = "switch"
+    CATEGORY = "CCNotes/Utils"
+    DESCRIPTION = "Automatic Switching (Efficiency Version) - Keep unselected input silent to optimize performance"
+
+    def check_lazy_status(self, switch, true=None, false=None):
+        needed = []
+        if switch:
+            if true is None:
+                needed.append("true")
+        else:
+            if false is None:
+                needed.append("false")
+        return needed
+
+    def switch(self, switch, true=None, false=None):
+        return (true if switch else false,)
+
 class SwitchOutput:
     @classmethod
     def INPUT_TYPES(cls):
@@ -681,33 +710,3 @@ class SwitchOutput:
         elif route == "output2":
             out2 = input_data
         return (out1, out2)
-
-class AutoMute:
-    """
-    AutoMute (Linked / Conditional) Node: Automatically mutes or unmutes target groups or nodes
-    based on the presence and active state of specified nodes. It automatically mutes or unmutes
-    target groups or nodes based on:
-    - the presence of specified nodes (by name or name group)
-    - and whether those nodes are currently active
-    """
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "keys": ("STRING", {
-                    "default": "",
-                    "multiline": False,
-                    # Node titles to monitor, separated by commas (e.g., get_mask1, get_mask2)
-                }),
-            }
-        }
-    
-    RETURN_TYPES = ()
-    FUNCTION = "noop"
-    CATEGORY = "CCNotes/Utils"
-    OUTPUT_NODE = True
-    DESCRIPTION = "AutoMute 🎛: Automatically mutes/unmutes target groups/nodes based on monitored nodes. Works like workflow autopilot! 🚀"
-    
-    def noop(self, keys="", **kwargs):
-        """No-op, all logic is implemented in frontend. No return value"""
-        return ()

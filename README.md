@@ -1,131 +1,157 @@
 # CCNotes Custom Nodes for ComfyUI 🎨⚡
 
-A fun and powerful collection of utility, image processing, and text manipulation nodes for ComfyUI. Designed to make your workflow smoother, more creative, and a bit magical. ✨
+A powerful and thoughtfully designed collection of custom nodes for ComfyUI, covering **workflow control, image & mask processing, previews, and text utilities**.  
+Built to make complex workflows **cleaner, faster, and more controllable**—with just a touch of fun ✨
 
-## Features
+---
 
-- **Image & Mask Processing**: Blend, constrain, switch, swap, and scale images and masks like a pro.  
-- **Process & Restore**: Crop images by mask, process them, and seamlessly restore them to their original positions—perfect for inpainting adventures.  
-- **Text Manipulation**: Crunch numbers, concatenate strings, translate text, and display content in your workflow.  
-- **Inpainting Utilities**: Specialized nodes for cropping, stitching, and extending images effortlessly.  
-- **Workflow Control**: Logical switches, pauses, previews, and automatic muting to keep your workflow under control (or secretly do the work for you). 😏
+## ✨ Features
 
-## Node Highlights
-### 🔀 SwitchAnyPro
+- **Image & Mask Processing**  
+  Blend, constrain, switch, swap, transform, and scale images and masks with precision and ease.
 
-More than just a basic switch, **SwitchAnyPro** also **controls execution flow**.  
+- **Process & Restore Workflows**  
+  Crop images by mask, process them independently, and seamlessly restore them to their original positions—ideal for advanced inpainting pipelines.
 
-**Key feature:**  
+- **Text & Numeric Utilities**  
+  Perform math operations, concatenate strings, translate and transform text, and display values directly inside your workflow.
+
+- **Inpainting Helpers**  
+  Purpose-built nodes for cropping, stitching, extending, and restoring image regions without manual rewiring.
+
+- **Workflow Control & Logic**  
+  Powerful logic switches, previews, pauses, and automatic muting nodes that give you fine-grained control over execution flow—while saving compute behind the scenes 😏
+
+---
+
+## 🌟 Node Highlights
+
+### 🔀 SwitchAnyMute
+
+More than a simple data switch, **SwitchAnyMute** provides **true execution-flow control**.
+
+**Key feature**  
 - 💤 **Upstream silence**  
-  Unselected inputs keep their entire upstream node chains completely inactive. Only the selected branch runs, saving computation and avoiding side effects.  
+  All unselected inputs keep their *entire upstream node chains fully inactive*. Only the selected branch executes.
 
-**Why it’s awesome:**  
-- Cuts unnecessary processing, especially for heavy image/mask chains  
-- Prevents side effects from inactive branches  
-- Makes complex workflows clear, deterministic, and easy to debug  
-- Enables true conditional execution, just like a mini-program inside ComfyUI  
+**Why it’s awesome**  
+- Eliminates unnecessary computation in heavy image or mask pipelines  
+- Prevents unintended side effects from inactive branches  
+- Makes complex workflows deterministic and easier to debug  
+- Enables real conditional execution—like a mini program inside ComfyUI  
 
-**Typical use cases:**  
+**Typical use cases**  
 - Prompt / conditioning A–B testing  
-- Switching between image and mask processing branches  
-- Debugging workflows without deleting nodes  
-- Performance-friendly pipelines  
+- Switching between alternative image or mask processing paths  
+- Debugging without deleting or muting nodes manually  
+- Building performance-friendly, conditional pipelines  
 
-**One-line summary:**  
-> **SwitchAnyPro**: Only the selected branch executes, while all other upstream branches stay silently in the background 😎  
+**One-line summary**  
+> **SwitchAnyMute**: Only the selected branch runs—everything else stays muted 😎
 
 ---
 
 ### 🔇 AutoMute
 
-Automatically mutes or unmutes target groups or nodes based on monitored node states.  
+Automatically mutes or unmutes nodes or groups based on monitored node states.
 
-**Key feature:**  
+**Key feature**  
 - 🤖 **Smart auto-control**  
-  Groups or nodes only wake up if a monitored node is active. Otherwise, they stay silent, keeping your workflow neat and efficient.  
+  Target nodes or groups activate only when required and remain silent otherwise.
 
-**Why it’s awesome:**  
-- Saves computation and avoids unnecessary processing  
-- Works seamlessly with Fast Groups Muter  
-- Lets you set up reactive workflows without extra wiring  
+**Why it’s awesome**  
+- Saves compute by preventing unnecessary execution  
+- Integrates seamlessly with *Fast Groups Muter*
+- Enables reactive, logic-driven workflows without extra wiring  
 
-**Typical use cases:**  
-- Automatically enable mask-processing groups only when needed  
-- Keep preview or auxiliary nodes dormant until triggered  
-- Dynamically control groups based on workflow logic  
+**Typical use cases**  
+- Enable mask-processing groups only when masks are present  
+- Keep previews and auxiliary nodes dormant until triggered  
+- Build self-managing workflows that adapt automatically  
 
-**One-line summary:**  
-> **AutoMute**: Your workflow’s smart ninja—activates only when needed, stays silent when not 😎  
+**One-line summary**  
+> **AutoMute**: A silent guardian for your workflow—active only when needed 😎
 
 ---
 
 ### 👀 AnyPreviewPause
 
-A multi-purpose node for previews and workflow intervention.  
+A versatile node for **previewing data and controlling execution**.
 
-**Key features:**  
-- 🖼️ **Image & Mask pairing** – Automatically pairs connected images and masks for grouped overlay previews, supports lists  
-- ⏸️ **Pause execution** – Pause before continuing to let you tweak masks or text  
-- ✨ **Flexible previews** – Works with images, masks, and text  
+**Key features**
+- 🖼️ **Image & mask pairing**
+  Automatically pairs connected images and masks for grouped overlay previews (list-supported).  
+- ⏸️ **Pause execution**
+  Temporarily halt the workflow to tweak masks, prompts, or text before continuing.  
+- ✨ **Flexible previews**
+  Works with images, masks, and text.
 
-**Why it’s awesome:**  
-- Lets you peek at intermediate results without breaking the workflow  
-- Perfect for interactive inpainting or text editing  
-- Makes debugging and fine-tuning fun and safe  
+**Why it’s awesome**  
+- Inspect intermediate results without breaking the workflow  
+- Perfect for interactive inpainting and prompt tuning  
+- Makes debugging and experimentation safe and enjoyable  
 
-**One-line summary:**  
-> **AnyPreviewPause**: Peek, pause, and tweak—preview anything while keeping the workflow under control 😎  
+**One-line summary**
+> **AnyPreviewPause**: Preview, pause, and tweak—without losing control 😎
 
 ---
 
-## Nodes
-### Image & Mask
-* `BlendByMask`: Blend two images using a mask—smooth magic.  
-* `ImageMask_Constrain`: Keep your images and masks perfectly sized.  
-* `ImageMask_Switch`, `ImageMask_SwitchAuto`: Swap images or masks on the fly.  
-* `ImageMask_Swap`: Flip two images/masks like a card trick.  
-* `ImageMask_Transform`: Rotate, flip, and play with images/masks.  
-* `ImageBatchToImageList`, `ImageListToImageBatch`: Convert formats effortlessly.  
-* `MakeBatch`: Turn multiple images into a batch with style.  
-* `ScaleAny`, `ImageMask_Scale`: Resize images or masks.  
-* `SwitchMaskAuto`: Let masks switch themselves.  
-* `ImageBlank`: Make a blank canvas—pure creative freedom.  
-* `ImageFilterAdjustments`: Brightness, contrast, and mood tweaks.  
-* `ImageRemoveAlpha`: Say goodbye to alpha channels.  
-* `ImageSwap`: Swap images with a snap.  
-* `ImageMaskComposite`: Layer masks over images effortlessly.
+## 📦 Nodes
 
-### Process & Restore
-* `CropByMask`, `CropByMaskRestore`: Crop and restore like a workflow ninja.  
-* `ImageConcat`, `ImageConcatRestore`: Stitch images together and bring them back.  
-* `ImageMask_Scale`, `ImageMask_ScaleRestore`: Resize, then restore—no sweat.
+### 🖼️ Image & Mask
 
-### Text
-* `Float`, `Int`: Basic numeric nodes.  
-* `MathOperationFloat`, `MathOperationInt`: Crunch numbers with ease.  
-* `StringListToString`: Join string lists into one.  
-* `TextConcat`: Concatenate texts effortlessly.  
-* `ShowText`: Display content in your workflow.  
-* `TextMultiline`: 🤫 Shh… works with macOS Shortcuts to translate and transform text magically. Fully customizable, Mac-only fun!
+- `BlendByMask` – Blend two images using a mask  
+- `ImageMask_Constrain` – Keep images and masks perfectly aligned  
+- `ImageMask_Switch`, `ImageMask_SwitchAuto` – Dynamically switch images or masks  
+- `ImageMask_Swap` – Swap two images or masks  
+- `ImageMask_Transform` – Rotate and flip images or masks  
+- `ImageBatchToImageList`, `ImageListToImageBatch` – Convert between batch and list formats  
+- `MakeBatch` – Create image batches  
+- `ScaleAny`, `ImageMask_Scale` – Resize images or masks  
+- `SwitchMaskAuto` – Automatically select masks  
+- `ImageBlank` – Generate a blank image canvas  
+- `ImageFilterAdjustments` – Brightness, contrast, and tone controls  
+- `ImageRemoveAlpha` – Remove alpha channels  
+- `ImageSwap` – Swap images  
+- `ImageMaskComposite` – Composite masks onto images
 
-### Utilities & Logic
-* `AnyPreview`: Preview images/text, optionally pause execution.  
-* `AnyPause`: Hit pause whenever you need.  
-* `AnyPreviewPause`: Auto-pairs connected images and masks for overlay previews and can pause the workflow—perfect for fine-tuning. 😎  
-* `SwitchAny`, `SwitchAnyBasic`, `SwitchAuto`, `SwitchOutput`: Logic switches for anything you throw at them.  
-* `PrimitiveAdvanced`: Advanced primitive node with flair.  
-* `MakeAnyList`: Create lists of any type.  
-* `AutoMute`: Automatically mutes/unmutes target groups/nodes based on monitored states—works like a secret autopilot with Fast Groups Muter.
+---
 
-## Installation
+### 🔁 Process & Restore
 
-1. Navigate to your ComfyUI `custom_nodes` directory.  
-2. Clone this repository:  
-	```bash
-	git clone https://github.com/Ginolazy/ComfyUI-CCNotes.git
-    ```
-3.  Install dependencies:
-    ```bash
-    pip install -r requirements.txt
-    ```
- 
+- `CropByMask`, `CropByMaskRestore` – Crop by mask and restore seamlessly  
+- `ImageConcat`, `ImageConcatRestore` – Concatenate images and restore layout  
+- `ImageMask_Scale`, `ImageMask_ScaleRestore` – Scale images or masks and restore originals
+
+---
+
+### 📝 Text
+
+- `Float`, `Int` – Basic numeric primitives  
+- `MathOperationFloat`, `MathOperationInt` – Math operations  
+- `StringListToString` – Join string lists  
+- `TextConcat` – Concatenate text  
+- `ShowText` – Display text in workflows  
+- `TextMultiline` – macOS-only node integrating with Shortcuts for text translation and transformation ✨
+
+---
+
+### 🧠 Utilities & Logic
+
+- `AnyPreview` – Preview images or text, optionally pause execution  
+- `AnyPause` – Pause workflow execution  
+- `AnyPreviewPause` – Paired previews + pause control  
+- `SwitchAny`, `SwitchAnyMute`, `SwitchAuto`, `SwitchOutput` –  
+  Logic switch nodes that route any type of data with explicit control over execution and outputs
+- `PrimitiveHub` – Manage and proxy multiple Primitive-style widgets from different nodes in a single control hub  
+- `MakeAnyList` – Create lists of any data type  
+- `AutoMute` – Automatically mute/unmute nodes or groups based on monitored states
+
+---
+
+## 🛠 Installation
+
+1. Navigate to your ComfyUI `custom_nodes` directory  
+2. Clone the repository:
+   ```bash
+   git clone https://github.com/Ginolazy/ComfyUI-CCNotes.git
