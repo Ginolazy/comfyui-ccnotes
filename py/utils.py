@@ -550,7 +550,7 @@ class MakeAnyList:
                 values.append(v)
         return (values,)
 
-class PrimitiveHub:
+class PrimitivePlus:
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -602,7 +602,7 @@ class PrimitiveHub:
                 output_values.append(port_value)
             return tuple(output_values)
         except Exception as e:
-            return handle_error_safe(e, "PrimitiveAdvanced failed", MAX_FLOW_PORTS)
+            return handle_error_safe(e, "PrimitivePlus failed", MAX_FLOW_PORTS)
 
 class SwitchAny:
     @classmethod

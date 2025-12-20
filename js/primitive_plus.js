@@ -5,7 +5,7 @@ import { DynamicPorts } from "./dynamic_ports.js";
 
 // Register workflow change event listener
 app.registerExtension({
-    name: "PrimitiveAdvanced_WorkflowChange",
+    name: "PrimitivePlus_WorkflowChange",
     async beforeRegisterNodeDef() {
         const origLoadGraph = app.loadGraph;
         app.loadGraph = function (graphData) {
@@ -14,7 +14,7 @@ app.registerExtension({
                 const nodes = app.graph._nodes_by_id;
                 for (const nodeId in nodes) {
                     const node = nodes[nodeId];
-                    if (node.type === "PrimitiveAdvanced" && typeof node.restoreWidgets === "function") {
+                    if (node.type === "PrimitivePlus" && typeof node.restoreWidgets === "function") {
                         node.restoreWidgets();
                     }
                 }
@@ -25,9 +25,9 @@ app.registerExtension({
 });
 
 app.registerExtension({
-    name: "./primitive_advanced.js",
+    name: "./primitive_plus.js",
     async beforeRegisterNodeDef(nodeType, nodeData, app) {
-        if (nodeData.name === "PrimitiveAdvanced") {
+        if (nodeData.name === "PrimitivePlus") {
             DynamicPorts.setupDynamicPorts(nodeType, {
                 type: "output",
                 baseName: "connect_to_widget_input",

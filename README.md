@@ -143,7 +143,7 @@ A versatile node for **previewing data and controlling execution**.
 - `AnyPreviewPause` – Paired previews + pause control  
 - `SwitchAny`, `SwitchAnyMute`, `SwitchAuto`, `SwitchOutput` –  
   Logic switch nodes that route any type of data with explicit control over execution and outputs
-- `PrimitiveHub` – Manage and proxy multiple Primitive-style widgets from different nodes in a single control hub  
+- `PrimitivePlus` – Manage and proxy multiple Primitive-style widgets from different nodes in a single control hub  
 - `MakeAnyList` – Create lists of any data type  
 - `AutoMute` – Automatically mute/unmute nodes or groups based on monitored states
 
