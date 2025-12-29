@@ -26,9 +26,9 @@ Built to make complex workflows **cleaner, faster, and more controllable**—wit
 
 ## 🌟 Node Highlights
 
-### 🔀 SwitchAnyMute
+### 🔀 SwitchAnyMute, SwitchAnyCombo (Mute)
 
-More than a simple data switch, **SwitchAnyMute** provides **true execution-flow control**.
+More than a simple data switch, **SwitchAnyMute, SwitchAnyCombo** provides **true execution-flow control**.
 
 **Key feature**  
 - 💤 **Upstream silence**  
@@ -47,7 +47,7 @@ More than a simple data switch, **SwitchAnyMute** provides **true execution-flow
 - Building performance-friendly, conditional pipelines  
 
 **One-line summary**  
-> **SwitchAnyMute**: Only the selected branch runs—everything else stays muted 😎
+> **SwitchAnyMute, SwitchAnyCombo**: Only the selected branch runs—everything else stays muted 😎
 
 ---
 
@@ -122,7 +122,7 @@ A versatile node for **previewing data and controlling execution**.
 - `CropByMask`, `CropByMaskRestore` – Crop by mask and restore seamlessly  
 - `ImageConcat`, `ImageConcatRestore` – Concatenate images and restore layout  
 - `ImageMask_Scale`, `ImageMask_ScaleRestore` – Scale images or masks and restore originals
-- `FluxKontextImageCompensate` – Expands canvas to compensate for Kontext model stretching (approx 5.2%)
+- `FluxKontextImageCompensate` – Expands canvas to compensate for Kontext model stretching
 - `FluxKontextImageRestore` – Restores image to original aspect ratio/composition, with optional pixel-perfect auto-alignment
 
 ---
@@ -143,7 +143,7 @@ A versatile node for **previewing data and controlling execution**.
 - `AnyPreview` – Preview images or text, optionally pause execution  
 - `AnyPause` – Pause workflow execution  
 - `AnyPreviewPause` – Paired previews + pause control  
-- `SwitchAny`, `SwitchAnyMute`, `SwitchAuto`, `SwitchAnyCombo`, `SwitchOutput` –  
+- `SwitchAny`, `SwitchAnyMute`, `SwitchAnyCombo`, `SwitchAuto`, `SwitchOutput` –  
   Logic switch nodes that route any type of data with explicit control over execution and outputs
 - `PrimitivePlus` – Manage and proxy multiple Primitive-style widgets from different nodes in a single control hub  
 - `MakeAnyList` – Create lists of any data type  
