@@ -40,8 +40,8 @@ class Int:
     def get_value(self, value):
         return (value,)
 
-# MathOperationFloat(basic)
-class MathOperationFloat:
+# MathOperation
+class MathOperation:
     INPUT_TYPE_A = "FLOAT"
     INPUT_TYPE_B = "FLOAT"
     RETURN_TYPE_ORDER = ("FLOAT", "INT")
@@ -69,27 +69,6 @@ class MathOperationFloat:
     def calculate(self, operation, A, B, precision=0):
         float_result, int_result = math_operation_calc(operation, A, B, precision)
         return float_result, int_result
-
-# MathOperationInt
-class MathOperationInt(MathOperationFloat):
-    INPUT_TYPE_A = "INT"
-    INPUT_TYPE_B = "INT"
-    RETURN_TYPE_ORDER = ("FLOAT", "INT")
-    RETURN_NAMES = ("float_result", "int_result")
-    
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "operation": ([
-                    "add", "subtract", "multiply", "divide", "modulo", "power",
-                    "sin", "cos", "tan", "sqrt", "exp", "log", "neg", "abs"
-                ],),
-                "precision": ("INT", {"default": 0, "min": -1, "max": 100}),
-                "A": (cls.INPUT_TYPE_A, {"default": 0, "min": -999999, "max": 999999, "step": 1}),
-                "B": (cls.INPUT_TYPE_B, {"default": 0, "min": -999999, "max": 999999, "step": 1}),
-            }
-        }
         
 # StringListToString
 class StringListToString:
