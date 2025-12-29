@@ -1,9 +1,65 @@
 /** ComfyUI/custom_nodes/CCNotes/js/dynamic_ports_register.js **/
 
 import { app } from "../../../scripts/app.js";
-import { ComfyWidgets } from "../../scripts/widgets.js";
 import { DynamicPorts } from "./dynamic_ports.js";
 import { setupOutputPortSync } from "./preview_pause_nodes.js"; // Port synchronization logic, used for all three nodes
+import { setupSwitchCombo } from "./switch_combo.js";
+
+// ========== Register AnyPause ==========
+app.registerExtension({
+    name: "CCNotes.AnyPause",
+    async beforeRegisterNodeDef(nodeType, nodeData, app) {
+        if (nodeData.name !== "AnyPause") return;
+
+        DynamicPorts.setupDynamicInputs(nodeType, {
+            baseInputName: "input",
+            inputType: "*",
+            startIndex: 1
+        });
+        setupOutputPortSync(nodeType, app);
+    },
+});
+
+// ========== Register AnyPreview ==========
+app.registerExtension({
+    name: "CCNotes.AnyPreview",
+    async beforeRegisterNodeDef(nodeType, nodeData, app) {
+        if (nodeData.name !== "AnyPreview") return;
+        DynamicPorts.setupDynamicInputs(nodeType, {
+            baseInputName: "input",
+            inputType: "*",
+            startIndex: 1
+        });
+        setupOutputPortSync(nodeType, app);
+    },
+});
+
+// ========== Register AnyPreviewPause ==========
+app.registerExtension({
+    name: "CCNotes.AnyPreviewPause",
+    async beforeRegisterNodeDef(nodeType, nodeData, app) {
+        if (nodeData.name !== "AnyPreviewPause") return;
+        DynamicPorts.setupDynamicInputs(nodeType, {
+            baseInputName: "input",
+            inputType: "*",
+            startIndex: 1
+        });
+        setupOutputPortSync(nodeType, app);
+    },
+});
+
+// ========== Register AutoMute ==========
+app.registerExtension({
+    name: "CCNotes.AutoMute.DynamicPorts",
+    async beforeRegisterNodeDef(nodeType, nodeData, app) {
+        if (nodeData.name !== "AutoMute") return;
+        DynamicPorts.setupDynamicInputs(nodeType, {
+            baseInputName: "control_nodes",
+            inputType: "*",
+            startIndex: 1
+        });
+    },
+});
 
 // ========== Register ImageMask_SwitchAuto ==========
 app.registerExtension({
@@ -15,6 +71,32 @@ app.registerExtension({
             inputType: "IMAGE",
             secondaryInputName: "mask",
             secondaryInputType: "MASK",
+            startIndex: 1
+        });
+    },
+});
+
+// ========== Register MakeAnyList ==========
+app.registerExtension({
+    name: "CCNotes.MakeAnyList",
+    async beforeRegisterNodeDef(nodeType, nodeData, app) {
+        if (nodeData.name !== "MakeAnyList") return;
+        DynamicPorts.setupDynamicInputs(nodeType, {
+            baseInputName: "input",
+            inputType: "*",
+            startIndex: 1
+        });
+    },
+});
+
+// ========== Register MakeBatch ==========
+app.registerExtension({
+    name: "CCNotes.MakeMaskBatch",
+    async beforeRegisterNodeDef(nodeType, nodeData, app) {
+        if (nodeData.name !== "MakeBatch") return;
+        DynamicPorts.setupDynamicInputs(nodeType, {
+            baseInputName: "input",
+            inputType: "*",
             startIndex: 1
         });
     },
@@ -33,164 +115,34 @@ app.registerExtension({
     },
 });
 
-// ========== Register MakeAnyList ==========
+// ========== Register SwitchCombo ==========
 app.registerExtension({
-    name: "CCNotes.MakeAnyList",
+    name: "CCNotes.SwitchCombo",
     async beforeRegisterNodeDef(nodeType, nodeData, app) {
-        if (nodeData.name !== "MakeAnyList") return;
-
-        DynamicPorts.setupDynamicInputs(nodeType, {
-            baseInputName: "input",
-            inputType: "*",
-            startIndex: 1
-        });
-    },
-});
-
-// ========== Register MakeBatch ==========
-app.registerExtension({
-    name: "CCNotes.MakeMaskBatch",
-    async beforeRegisterNodeDef(nodeType, nodeData, app) {
-        if (nodeData.name !== "MakeBatch") return;
-
-        DynamicPorts.setupDynamicInputs(nodeType, {
-            baseInputName: "input",
-            inputType: "*",
-            startIndex: 1
-        });
-    },
-});
-
-// ========== Register ShowText ==========
-app.registerExtension({
-    name: "CCNotes.ShowText",
-    async beforeRegisterNodeDef(nodeType, nodeData, app) {
-        if (nodeData.name === "ShowText") {
-            function populate(text) {
-                if (this.widgets) {
-                    const isConvertedWidget = +!!this.inputs?.[0].widget;
-                    for (let i = isConvertedWidget; i < this.widgets.length; i++) {
-                        this.widgets[i].onRemove?.();
-                    }
-                    this.widgets.length = isConvertedWidget;
+        if (nodeData.name !== "SwitchCombo") return;
+        if (nodeData.input && nodeData.input.optional) {
+            const optional = nodeData.input.optional;
+            const keysToRemove = [];
+            for (const key in optional) {
+                if (key === "_mapping" || (key.startsWith("input_") && key !== "input_1")) {
+                    keysToRemove.push(key);
                 }
-
-                const v = Array.isArray(text) ? [...text] : [text];
-                if (!v[0]) v.shift();
-                for (let list of v) {
-                    if (!(list instanceof Array)) list = [list];
-                    for (const l of list) {
-                        const w = ComfyWidgets["STRING"](
-                            this,
-                            "text_" + (this.widgets?.length ?? 0),
-                            ["STRING", { multiline: true }],
-                            app
-                        ).widget;
-                        w.inputEl.readOnly = true;
-                        w.inputEl.style.opacity = 0.6;
-                        w.value = l ?? "";
-                    }
-                }
-
-                requestAnimationFrame(() => {
-                    const sz = this.computeSize();
-                    if (sz[0] < this.size[0]) sz[0] = this.size[0];
-                    if (sz[1] < this.size[1]) sz[1] = this.size[1];
-                    this.onResize?.(sz);
-                    app.graph.setDirtyCanvas(true, false);
-                });
             }
-
-            const onExecuted = nodeType.prototype.onExecuted;
-            nodeType.prototype.onExecuted = function (message) {
-                onExecuted?.apply(this, arguments);
-                populate.call(this, message.text);
-            };
-
-            const VALUES = Symbol();
-            const configure = nodeType.prototype.configure;
-            nodeType.prototype.configure = function () {
-                this[VALUES] = arguments[0]?.widgets_values;
-                return configure?.apply(this, arguments);
-            };
-
-            const onConfigure = nodeType.prototype.onConfigure;
-            nodeType.prototype.onConfigure = function () {
-                onConfigure?.apply(this, arguments);
-                const widgets_values = this[VALUES];
-                if (widgets_values?.length) {
-                    requestAnimationFrame(() => {
-                        populate.call(
-                            this,
-                            widgets_values.slice(+(widgets_values.length > 1 && this.inputs?.[0].widget))
-                        );
-                    });
-                }
-            };
+            for (const key of keysToRemove) {
+                delete optional[key];
+            }
         }
-    },
-});
-
-// ========== Register AnyPreviewPause ==========
-app.registerExtension({
-    name: "CCNotes.AnyPreviewPause",
-    async beforeRegisterNodeDef(nodeType, nodeData, app) {
-        if (nodeData.name !== "AnyPreviewPause") return;
-
+        setupSwitchCombo(nodeType);
         DynamicPorts.setupDynamicInputs(nodeType, {
             baseInputName: "input",
             inputType: "*",
             startIndex: 1
         });
-
-        setupOutputPortSync(nodeType, app);
-    },
-});
-
-// ========== Register AnyPreview ==========
-app.registerExtension({
-    name: "CCNotes.AnyPreview",
-    async beforeRegisterNodeDef(nodeType, nodeData, app) {
-        if (nodeData.name !== "AnyPreview") return;
-
-        DynamicPorts.setupDynamicInputs(nodeType, {
-            baseInputName: "input",
-            inputType: "*",
-            startIndex: 1
-        });
-
-        // Setup port synchronization logic
-        setupOutputPortSync(nodeType, app);
-    },
-});
-
-// ========== Register AnyPause ==========
-app.registerExtension({
-    name: "CCNotes.AnyPause",
-    async beforeRegisterNodeDef(nodeType, nodeData, app) {
-        if (nodeData.name !== "AnyPause") return;
-
-        DynamicPorts.setupDynamicInputs(nodeType, {
-            baseInputName: "input",
-            inputType: "*",
-            startIndex: 1
-        });
-
-        // Setup port synchronization logic
-        setupOutputPortSync(nodeType, app);
-    },
-});
-
-// ========== Register AutoMute ==========
-app.registerExtension({
-    name: "CCNotes.AutoMute.DynamicPorts",
-    async beforeRegisterNodeDef(nodeType, nodeData, app) {
-        if (nodeData.name !== "AutoMute") return;
-
-        DynamicPorts.setupDynamicInputs(nodeType, {
-            baseInputName: "control_nodes",
-            inputType: "*",
-            startIndex: 1
-        });
+        const origOnNodeCreated = nodeType.prototype.onNodeCreated;
+        nodeType.prototype.onNodeCreated = function () {
+            if (origOnNodeCreated) origOnNodeCreated.apply(this, arguments);
+            this.updateSwitchComboOptions?.();
+            this.setSize(this.computeSize());
+        };
     },
 });

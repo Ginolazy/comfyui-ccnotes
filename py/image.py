@@ -1059,7 +1059,6 @@ class FluxKontextImageCompensate:
         return {
             "required": {
                 "image": ("IMAGE",),
-                "k_factor": ("FLOAT", {"default": 1.0521, "min": 1.0, "max": 2.0, "step": 0.0001}),
                 "comp_mode": (["Mirror", "Replicate", "Solid Color"], {"default": "Mirror"}),
             },
             "optional": {
@@ -1072,7 +1071,8 @@ class FluxKontextImageCompensate:
     FUNCTION = "compensate"
     CATEGORY = "CCNotes/Process & Restore"
 
-    def compensate(self, image, k_factor, comp_mode, solid_color="#FFFFFF"):
+    def compensate(self, image, comp_mode, solid_color="#FFFFFF"):
+        k_factor = 1.0521
         # image shape: [B, H, W, C]
         img = image.permute(0, 3, 1, 2)  # [B, C, H, W]
         # Map nice names to internal pyTorch modes
@@ -1134,7 +1134,7 @@ class FluxKontextImageCompensate:
             "pad_left": pad_left,
             "pad_right": pad_right,
         }
-        print(f"FluxKontextCompensate: {old_w}x{old_h} -> {new_w}x{new_h} (X+{pad_total_x}, Y+{pad_total_y})")
+
         
         output_image = img_out.permute(0, 2, 3, 1)
         return (output_image, data, new_w, new_h)
@@ -1215,8 +1215,6 @@ class FluxKontextImageRestore:
                 found_x, found_y = max_loc
                 best_y = found_y - crop_y
                 best_x = found_x - crop_x
-
-        print(f"FluxKontext AutoAlign: Scale={best_scale:.4f}, OffsetY={best_y}px, OffsetX={best_x}px, Score={best_score:.4f}")
         return best_scale, best_y, best_x
 
     def restore(self, image, comp_data, reference_image=None):
@@ -1249,7 +1247,6 @@ class FluxKontextImageRestore:
                 final_offset_x = off_x
                 
             except Exception as e:
-                print(f"FluxKontext AutoAlign Failed: {e}")
                 reference_image = None # Fallback
         
         if reference_image is None:
@@ -1328,7 +1325,7 @@ class FluxKontextImageRestore:
         if img_out.shape[2] != orig_h or img_out.shape[3] != orig_w:
              img_out = F.interpolate(img_out, size=(orig_h, orig_w), mode='bicubic')
             
-        print(f"FluxKontext Restore: ScaleY={final_scale_y:.4f}, OffsetY={final_offset_y:.1f}, ScaleX={final_scale_x:.4f}, OffsetX={final_offset_x:.1f}")
+
         
         output_image = img_out.permute(0, 2, 3, 1)
         return (output_image,)

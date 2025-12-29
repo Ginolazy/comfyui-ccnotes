@@ -483,7 +483,7 @@ class AutoMute:
         """No-op, all logic is implemented in frontend. No return value"""
         return ()
 
-class ImageMaskComposite(SaveImage):
+class ImageMask_Composite(SaveImage):
     def __init__(self):
         self.output_dir = folder_paths.get_temp_directory()
         self.type = "temp"
@@ -517,9 +517,11 @@ class ImageMaskComposite(SaveImage):
         return 0
 
     def process_composite(self, mask_opacity=1.0, mask_color="255, 255, 255", image=None, mask=None, unique_id=None):
-        from .utility.image_utility import parse_color
+        from .utility.image_utility import parse_color, is_empty_mask
         unique_id_str = str(unique_id[0] if isinstance(unique_id, list) and unique_id else unique_id)
 
+        if mask is not None and is_empty_mask(mask):
+            mask = None
         if mask is None:
             result = image
         elif image is None:
@@ -709,3 +711,56 @@ class SwitchOutput:
         elif route == "output2":
             out2 = input_data
         return (out1, out2)
+
+import json
+
+class AlwaysList(list):
+    def __contains__(self, item):
+        return True
+
+class SwitchCombo:
+    @classmethod
+    def INPUT_TYPES(cls):
+        inputs = {
+            "required": {
+                "selected": (AlwaysList(["input_1"]), {"default": "input_1"}),
+            },
+            "hidden": {
+                "unique_id": "UNIQUE_ID",
+            }
+        }
+        
+        inputs["optional"] = {}
+        for i in range(1, MAX_FLOW_PORTS + 1):
+            inputs["optional"][f"input_{i}"] = (any_type, {"lazy": True})
+        return inputs
+
+    @classmethod
+    def VALIDATE_INPUTS(cls, input_types):
+        return True
+
+    RETURN_TYPES = (any_type,)
+    RETURN_NAMES = ("output",)
+    FUNCTION = "switch"
+    CATEGORY = "CCNotes/Utils"
+    
+    def _resolve_port(self, selected):
+        if "\u200B" in selected:
+            return selected.split("\u200B")[-1]
+
+        if ":" in selected:
+             return selected.split(":")[0].strip()
+        
+        return selected
+
+    def check_lazy_status(self, selected="input_1", unique_id=None, **kwargs):
+        port_name = self._resolve_port(selected)
+        return [port_name]
+    
+    def switch(self, selected="input_1", unique_id=None, **kwargs):
+        port_name = self._resolve_port(selected)
+        if port_name in kwargs:
+            return (kwargs[port_name],)
+        
+        print(f"[SwitchCombo] Warning: Port '{port_name}' selected but no input connected.")
+        return (None,)

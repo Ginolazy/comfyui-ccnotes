@@ -113,7 +113,7 @@ A versatile node for **previewing data and controlling execution**.
 - `ImageFilterAdjustments` – Brightness, contrast, and tone controls  
 - `ImageRemoveAlpha` – Remove alpha channels  
 - `ImageSwap` – Swap images  
-- `ImageMaskComposite` – Composite masks onto images
+- `ImageMask_Composite` – Composite masks onto images
 
 ---
 

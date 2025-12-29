@@ -156,6 +156,8 @@ def generate_preview_images(input_values: List[Any]) -> List[torch.Tensor]:
         if is_img:
             next_val = input_values[i+1] if i + 1 < len(input_values) else None
             next_is_mask = isinstance(next_val, torch.Tensor) and next_val.ndim in (2, 3)
+            if next_is_mask and is_empty_mask(next_val):
+                next_is_mask = False
             if next_is_mask:
                 try:
                     img_tensor = val
@@ -227,6 +229,12 @@ def generate_text_previews(input_values: List[Any], max_length: int = 500) -> Li
                 text_previews.append(f"List: {len(val)} items")
     return text_previews
 
+def is_empty_mask(mask_tensor: torch.Tensor) -> bool:
+    unique_vals = mask_tensor.unique()
+    if len(unique_vals) == 1:
+        return unique_vals[0].item() in (0.0, 1.0)
+    return False
+
 def normalize_mask_tensor(mask_tensor: torch.Tensor) -> torch.Tensor: # mask [B, H, W, 1]
     if mask_tensor.ndim == 2:
         mask_tensor = mask_tensor.unsqueeze(0).unsqueeze(-1) # [H, W] -> [1, H, W, 1]
@@ -268,6 +276,8 @@ def generate_editable_images(input_values: List[Any]) -> List[torch.Tensor]: # R
         if is_img:
             next_val = input_values[i+1] if i + 1 < len(input_values) else None
             next_is_mask = isinstance(next_val, torch.Tensor) and next_val.ndim in (2, 3)
+            if next_is_mask and is_empty_mask(next_val):
+                next_is_mask = False
             if next_is_mask:
                 img_rgba = create_rgba_from_image_mask(val, next_val)
                 editable_images_list.append(img_rgba)
