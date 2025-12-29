@@ -1,7 +1,7 @@
-/** ComfyUI/custom_nodes/CCNotes/js/switch_combo.js **/
+/** ComfyUI/custom_nodes/CCNotes/js/switch_any_combo.js **/
 
-export function setupSwitchCombo(nodeType) {
-    nodeType.prototype.updateSwitchComboOptions = function () {
+export function setupSwitchAnyCombo(nodeType) {
+    nodeType.prototype.updateSwitchAnyComboOptions = function () {
         if (!this.inputs || !this.widgets) return;
         const widget = this.widgets.find(w => w.name === "selected");
         if (!widget) return;
@@ -43,6 +43,19 @@ export function setupSwitchCombo(nodeType) {
             this._labelToPortMap["input_1"] = "input_1";
             this._portToLabelMap["input_1"] = "input_1";
         }
+
+        // Update input labels to match the friendly names
+        for (const input of this.inputs) {
+            if (input.name.startsWith("input_")) {
+                const friendlyName = this._portToLabelMap[input.name];
+                if (friendlyName) {
+                    input.label = friendlyName;
+                } else {
+                    input.label = input.name;
+                }
+            }
+        }
+
         widget.options.values = comboOptions;
         if (!widget._origSerializeValue) {
             widget._origSerializeValue = widget.serializeValue;
@@ -66,14 +79,14 @@ export function setupSwitchCombo(nodeType) {
     nodeType.prototype.onConfigure = function () {
         if (origOnConfigure) origOnConfigure.apply(this, arguments);
         requestAnimationFrame(() => {
-            this.updateSwitchComboOptions?.();
+            this.updateSwitchAnyComboOptions?.();
         });
     };
     const origOnConnectionsChange = nodeType.prototype.onConnectionsChange;
     nodeType.prototype.onConnectionsChange = function (type) {
         if (origOnConnectionsChange) origOnConnectionsChange.apply(this, arguments);
         if (type === 1) {
-            setTimeout(() => this.updateSwitchComboOptions?.(), 50);
+            setTimeout(() => this.updateSwitchAnyComboOptions?.(), 50);
         }
     };
 }

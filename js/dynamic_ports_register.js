@@ -3,7 +3,7 @@
 import { app } from "../../../scripts/app.js";
 import { DynamicPorts } from "./dynamic_ports.js";
 import { setupOutputPortSync } from "./preview_pause_nodes.js"; // Port synchronization logic, used for all three nodes
-import { setupSwitchCombo } from "./switch_combo.js";
+import { setupSwitchAnyCombo } from "./switch_any_combo.js";
 
 // ========== Register AnyPause ==========
 app.registerExtension({
@@ -102,24 +102,11 @@ app.registerExtension({
     },
 });
 
-// ========== Register TextConcat ==========
+// ========== Register SwitchAnyCombo ==========
 app.registerExtension({
-    name: "CCNotes.TextConcat",
+    name: "CCNotes.SwitchAnyCombo",
     async beforeRegisterNodeDef(nodeType, nodeData, app) {
-        if (nodeData.name !== "TextConcat") return;
-        DynamicPorts.setupDynamicInputs(nodeType, {
-            baseInputName: "text",
-            inputType: "STRING",
-            startIndex: 1
-        });
-    },
-});
-
-// ========== Register SwitchCombo ==========
-app.registerExtension({
-    name: "CCNotes.SwitchCombo",
-    async beforeRegisterNodeDef(nodeType, nodeData, app) {
-        if (nodeData.name !== "SwitchCombo") return;
+        if (nodeData.name !== "SwitchAnyCombo") return;
         if (nodeData.input && nodeData.input.optional) {
             const optional = nodeData.input.optional;
             const keysToRemove = [];
@@ -132,7 +119,7 @@ app.registerExtension({
                 delete optional[key];
             }
         }
-        setupSwitchCombo(nodeType);
+        setupSwitchAnyCombo(nodeType);
         DynamicPorts.setupDynamicInputs(nodeType, {
             baseInputName: "input",
             inputType: "*",
@@ -141,8 +128,21 @@ app.registerExtension({
         const origOnNodeCreated = nodeType.prototype.onNodeCreated;
         nodeType.prototype.onNodeCreated = function () {
             if (origOnNodeCreated) origOnNodeCreated.apply(this, arguments);
-            this.updateSwitchComboOptions?.();
+            this.updateSwitchAnyComboOptions?.();
             this.setSize(this.computeSize());
         };
+    },
+});
+
+// ========== Register TextConcat ==========
+app.registerExtension({
+    name: "CCNotes.TextConcat",
+    async beforeRegisterNodeDef(nodeType, nodeData, app) {
+        if (nodeData.name !== "TextConcat") return;
+        DynamicPorts.setupDynamicInputs(nodeType, {
+            baseInputName: "text",
+            inputType: "STRING",
+            startIndex: 1
+        });
     },
 });
