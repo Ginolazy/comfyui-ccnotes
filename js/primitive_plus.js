@@ -18,6 +18,7 @@ app.registerExtension({
                 } else if (this.outputs.length > 1) {
                     this.outputs.length = 1;
                 }
+                this.connectionState = {};
                 this.properties = this.properties || {};
                 this.properties.portLabels = this.properties.portLabels || {};
                 this.size = [this.size[0], 32]; // Initial size
@@ -29,6 +30,23 @@ app.registerExtension({
                 setTimeout(() => {
                     this.managePorts();
                 }, 10);
+                this.onWidgetChange = function (outputName, value) {
+                    const connection = this.connectionState[outputName];
+                    if (connection) {
+                        const targetNode = app.graph.getNodeById(connection.nodeId);
+                        if (targetNode && targetNode.widgets) {
+                            const targetWidget = targetNode.widgets.find(w => w.name === connection.inputName);
+                            if (targetWidget) {
+                                targetWidget.value = value;
+                                if (targetWidget.callback) {
+                                    targetWidget.callback(value, targetWidget, targetNode);
+                                }
+                                targetNode.setDirtyCanvas(true, true);
+                            }
+                        }
+                    }
+                    return value;
+                };
             };
 
             // --- Serialization ---
@@ -237,30 +255,39 @@ app.registerExtension({
                 const isCombo = targetWidget.type === "combo" || Array.isArray(options.values);
                 const isNumber = targetWidget.type === "number" || typeof targetWidget.value === "number";
                 const isBoolean = targetWidget.type === "toggle" || typeof targetWidget.value === "boolean";
+
+                this.connectionState[name] = {
+                    nodeId: targetNode.id,
+                    slot: null,
+                    inputName: targetWidget.name
+                };
+
                 let w;
-                const callback = (v) => {
+                const self = this;
+                const callbackViaState = (v) => self.onWidgetChange(name, v);
+                const callbackDirect = (v) => {
                     targetWidget.value = v;
                     if (targetWidget.callback) {
-                        targetWidget.callback(v, app.canvas, targetNode, app.canvas.getPointerPos()); // passing somewhat fake args
+                        targetWidget.callback(v, app.canvas, targetNode, app.canvas.getPointerPos());
                     }
                     targetNode.setDirtyCanvas(true, true);
                 };
 
                 if (isCombo) {
-                    w = this.addWidget("combo", name, targetWidget.value, callback, options);
+                    w = this.addWidget("combo", name, targetWidget.value, callbackDirect, options);
                 } else if (isBoolean) {
-                    w = this.addWidget("toggle", name, targetWidget.value, callback, options);
+                    w = this.addWidget("toggle", name, targetWidget.value, callbackViaState, options);
                 } else if (isNumber) {
-                    w = this.addWidget("number", name, targetWidget.value, callback, options);
+                    w = this.addWidget("number", name, targetWidget.value, callbackDirect, options);
                 } else {
                     if (targetWidget.type === "customtext" || options?.multiline) {
                         options.multiline = true;
                         const widgetObj = ComfyWidgets["STRING"](this, name, ["STRING", options], app);
                         w = widgetObj.widget;
                         w.value = targetWidget.value;
-                        w.callback = callback;
+                        w.callback = callbackDirect;
                     } else {
-                        w = this.addWidget("string", name, targetWidget.value, callback, options);
+                        w = this.addWidget("string", name, targetWidget.value, callbackDirect, options);
                     }
                 }
                 const wLabel = targetWidget.label || targetWidget.name;
